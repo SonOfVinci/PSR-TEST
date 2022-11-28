@@ -4,5 +4,3 @@ repos:
     hooks:
     -   id: gitlint
         args: [--contrib=CT1, --ignore=B6,  --msg-filename]
-    -   id: gitlint-ci
-        args: [--contrib=CT1, --ignore=B6, -c general.ignore-by-author-name.regex=github-actions, --msg-filename]

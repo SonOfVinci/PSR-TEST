@@ -26,7 +26,8 @@ jobs:
         pip install -r requirements.txt
     - name: Commit Lint
       run: |
-        pre-commit run --hook-stage manual gitlint-ci
+        pip install gitlint==0.18.0
+        gitlint --contrib=CT1 --ignore=B6 -c general.ignore-by-author-name.regex=github-actions
     - name: Lint with pylint
       run: |
         pip install pylint
