@@ -1,0 +1,56 @@
+name: ci-cd
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.9"
+    - name: Install dependencies
+      run: |
+        python --version
+        python -m pip install --upgrade pip
+        python -m pip install wheel
+        pip install -r requirements.txt
+    - name: Commit Lint
+      run: |
+        pip install gitlint
+        gitlint --contrib CT1 --ignore B6 -c general.ignore-merge-commits=true
+    - name: Lint with pylint
+      run: |
+        pip install pylint
+        pylint  --rcfile=.pylintrc decide/*.py
+    - name: Test with pytest
+      run: |
+        pytest -vv decide/test --disable-pytest-warnings
+
+  cd:
+    needs: ci
+
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        # token: ${{ secrets.GH_TOKEN }}
+    - name: Use Python Semantic Release to prepare Release
+      uses: relekang/python-semantic-release@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        repository_username: ${{ secrets.PYPI_USERNAME }}
+        repository_password: ${{ secrets.PYPI_PASSWORD }}
