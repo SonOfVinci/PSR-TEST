@@ -297,4 +297,3 @@ Examples of good commits:
 ## Issues
 To create an issue, simply click on the issues tab on the menu and create a new issue.
 
-
